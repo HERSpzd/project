@@ -114,11 +114,23 @@
             </div>
           </template>
           <div class="qActions">
-            <el-button type="primary">View health data</el-button>
-            <el-button type="success">Publish health knowledge</el-button>
-            <el-button type="info">View health information</el-button>
-            <el-button type="warning">Overview of Health Data</el-button>
-            <el-button type="danger">User Management</el-button>
+            <!-- 直接使用 <a> 标签嵌套 <el-button> -->
+            <a href="/health-monitoring">
+              <el-button type="primary">View health data</el-button>
+            </a>
+            <a href="/health-knowledge">
+              <el-button type="success">View health knowledge</el-button>
+            </a>
+            <!-- 假设 "Overview of Health Data" 也跳转到健康监测 -->
+            <a href="/health-monitoring">
+              <el-button type="info">Overview of Health Data</el-button>
+            </a>
+            <a href="/user-settings">
+              <el-button type="warning">User Settings</el-button>
+            </a>
+            <a href="/ai-consultation">
+              <el-button type="danger">AI Consultation</el-button>
+            </a>
           </div>
         </el-card>
       </div>

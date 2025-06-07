@@ -379,12 +379,27 @@ const fetchAIAnalysis = async () => {
 
   try {
     const token = localStorage.getItem("token") || store.getters.token;
-    const response = await axios.post(aiAnalysisUrl.value, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+
+    // 检查token是否存在
+    if (!token) {
+      aiAnalysisError.value = "Authentication token not found. Please log in.";
+      ElMessage.error(aiAnalysisError.value);
+      aiAnalysisLoading.value = false;
+      return;
+    }
+
+    // 修正后的 axios.post 调用
+    const response = await axios.post(
+      aiAnalysisUrl.value,
+      {}, // <--- 这里是空的请求体，因为你的后端 /health-analysis 不需要请求体
+      {
+        // <--- 这是一个单独的配置对象，包含 headers
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (response.data.success) {
       aiAnalysisResult.value = response.data.analysis;
@@ -395,8 +410,15 @@ const fetchAIAnalysis = async () => {
     }
   } catch (error) {
     console.error("Error fetching AI analysis:", error);
-    aiAnalysisError.value = "Network error, failed to get AI analysis.";
-    ElMessage.error(aiAnalysisError.value);
+    if (error.response && error.response.status === 401) {
+      aiAnalysisError.value =
+        "Session expired or unauthorized. Please log in again.";
+      ElMessage.error(aiAnalysisError.value);
+      router.push("/");
+    } else {
+      aiAnalysisError.value = "Network error, failed to get AI analysis.";
+      ElMessage.error(aiAnalysisError.value);
+    }
   } finally {
     aiAnalysisLoading.value = false;
   }
